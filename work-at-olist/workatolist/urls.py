@@ -3,5 +3,5 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('channels.api.urls'))
+    url(r'^api-channels/', include('channels.api.urls'))
 ]
