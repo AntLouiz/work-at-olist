@@ -21,9 +21,12 @@ class Command(BaseCommand):
                 line = [word.strip() for word in line.split('/')]
                 yield line
 
+    def get_channel(self, *args, **options):
+        return options['channel'][0]
+
     def get_categories(self, *args, **options):
 
-        channel_desc = options['channel'][0]
+        channel_desc = self.get_channel(*args, **options)
         for categories in self.get_file_line(*args, **options):
             channel = categories[0]
 
@@ -55,7 +58,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Trying to import the categories...")
 
-        channel_desc = options['channel'][0]
+        channel_desc = self.get_channel(*args, **options)
 
         #checking if the channel inside the file is the same of the argument.
         for line in self.get_file_line(*args, **options):
@@ -64,7 +67,7 @@ class Command(BaseCommand):
                     "The channel inside the file is different from the argument."
                 )
 
-            channel_obj = Channel.objects.get_or_create(name=channel_desc)
+            
 
         categories = self.get_categories(*args, **options)
         for cat in categories:
