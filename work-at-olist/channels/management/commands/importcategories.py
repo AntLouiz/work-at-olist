@@ -21,6 +21,37 @@ class Command(BaseCommand):
                 line = [word.strip() for word in line.split('/')]
                 yield line
 
+    def get_categories(self, *args, **options):
+
+        channel_desc = options['channel'][0]
+        for categories in self.get_file_line(*args, **options):
+            channel = categories[0]
+
+            """
+            if the channel inside the file is
+            not the same of the argument, raise a Exception.
+            """
+            if channel != channel_desc:
+                raise Exception(
+                    "The channel inside the file\
+                    is different from the argument."
+                )
+
+            try:
+                category = {'channel': channel}
+
+                if categories[-2] != channel:
+                    category['parent_category'] = categories[-2]
+                else:
+                    category['parent_category'] = None
+
+                category['category'] = categories[-1]
+
+                yield category
+
+            except:
+                pass
+
     def handle(self, *args, **options):
         print("Trying to import the categories...")
 
@@ -35,26 +66,6 @@ class Command(BaseCommand):
 
             channel_obj = Channel.objects.get_or_create(name=channel_desc)
 
-        for categories in self.get_file_line(*args, **options):
-            channel = categories[0]
-
-            #checking if the channel inside the file is the same of the argument.
-            if channel != channel_desc:
-                raise Exception(
-                    "The channel inside the file is different from the argument."
-                )
-
-            try:
-                parent_category = categories[-2] if categories[-2] != channel else None
-                category = categories[-1]
-
-                c = {
-                    'channel': channel,
-                    'parent_category': parent_category,
-                    'category': category
-                }
-
-                print(c)
-
-            except:
-                pass
+        categories = self.get_categories(*args, **options)
+        for cat in categories:
+            print(cat)
