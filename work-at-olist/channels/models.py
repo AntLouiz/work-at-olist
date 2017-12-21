@@ -11,9 +11,9 @@ class Channel(models.Model):
         verbose_name = "Channel"
         verbose_name_plural = "Channels"
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Channel, self).save()
+        super(Channel, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -41,13 +41,13 @@ class Category(models.Model):
         verbose_name = "Category"
         verbose_name_plural = "Category"
 
-    def save(self):
+    def save(self, *args, **kwargs):
         parent_category = self.parent_category
         if parent_category:
             self.channel = parent_category.channel
 
         self.slug = slugify(self.name)
-        super(Category, self).save()
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
