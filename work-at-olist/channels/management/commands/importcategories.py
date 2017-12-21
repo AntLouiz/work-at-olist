@@ -1,6 +1,6 @@
 import os
 from django.core.management.base import BaseCommand, CommandError
-from channels.models import Channel
+from channels.models import Channel, Category
 
 
 class Command(BaseCommand):
@@ -43,27 +43,45 @@ class Command(BaseCommand):
 
             try:
                 if not channel_object:
-                    channel_object = Channel.objects.get_or_create(
+                    channel_object, _ = Channel.objects.get_or_create(
                         name=channel_desc
                     )
 
-                category = {'channel': channel}
+                category = {'channel': channel_object}
 
                 if categories[-2] != channel:
                     category['parent_category'] = categories[-2]
                 else:
                     category['parent_category'] = None
 
-                category['category'] = categories[-1]
+                category['name'] = categories[-1]
 
                 yield category
 
-            except:
+            except :
                 pass
+
+    def create_categories(self, *args, **options):
+        categories = self.get_categories(*args, **options)
+        for category in categories:
+            name = category['name']
+            channel = category['channel']
+
+            if category['parent_category']:
+                category['parent_category'], _ = Category.objects.get_or_create(
+                    name=category['parent_category'],
+                    channel=channel,
+                    parent_category=None
+                )
+
+            Category.objects.get_or_create(
+                name=name,
+                channel=channel,
+                parent_category=category['parent_category']
+            )
+            print(category)
 
     def handle(self, *args, **options):
         print("Trying to import the categories...")
 
-        categories = self.get_categories(*args, **options)
-        for cat in categories:
-            print(cat)
+        self.create_categories(*args, **options)
