@@ -25,8 +25,9 @@ class Command(BaseCommand):
         return options['channel'][0]
 
     def get_categories(self, *args, **options):
-
+        channel_object = None
         channel_desc = self.get_channel(*args, **options)
+
         for categories in self.get_file_line(*args, **options):
             channel = categories[0]
 
@@ -41,6 +42,11 @@ class Command(BaseCommand):
                 )
 
             try:
+                if not channel_object:
+                    channel_object = Channel.objects.get_or_create(
+                        name=channel_desc
+                    )
+
                 category = {'channel': channel}
 
                 if categories[-2] != channel:
@@ -57,17 +63,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print("Trying to import the categories...")
-
-        channel_desc = self.get_channel(*args, **options)
-
-        #checking if the channel inside the file is the same of the argument.
-        for line in self.get_file_line(*args, **options):
-            if line[0] != channel_desc:
-                raise Exception(
-                    "The channel inside the file is different from the argument."
-                )
-
-            
 
         categories = self.get_categories(*args, **options)
         for cat in categories:
