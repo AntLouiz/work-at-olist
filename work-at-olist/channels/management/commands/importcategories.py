@@ -22,11 +22,16 @@ class Command(BaseCommand):
                 yield line
 
     def get_channel(self, *args, **options):
-        return options['channel'][0]
+        channel_object, _ = Channel.objects.get_or_create(
+            name=options['channel'][0]
+        )
+        return channel_object
 
     def get_categories(self, *args, **options):
-        channel_object = None
-        channel_desc = self.get_channel(*args, **options)
+        channel_object = self.get_channel(*args, **options)
+
+        if channel_object.category_set.exists():
+            channel_object.category_set.all().delete()
 
         for categories in self.get_file_line(*args, **options):
             channel = categories[0]
@@ -35,17 +40,14 @@ class Command(BaseCommand):
             if the channel inside the file is
             not the same of the argument, raise a Exception.
             """
-            if channel != channel_desc:
+            if channel != channel_object.name:
+                channel_object.delete()
                 raise Exception(
                     "The channel inside the file\
                     is different from the argument."
                 )
 
             try:
-                if not channel_object:
-                    channel_object, _ = Channel.objects.get_or_create(
-                        name=channel_desc
-                    )
                 category = {'channel': channel_object}
 
                 if categories[-2] != channel:
