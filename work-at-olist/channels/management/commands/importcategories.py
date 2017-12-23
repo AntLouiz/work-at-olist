@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
                 yield category
 
-            except :
+            except IndexError:
                 pass
 
     def create_categories(self, *args, **options):
