@@ -16,6 +16,7 @@ class Command(BaseCommand):
         if not os.path.isfile(filename):
             raise CommandError("File not found.")
 
+        self.stdout.write("Importing the categories...")
         with open(filename, 'r') as file:
             for line in file.readlines():
                 line = [word.strip() for word in line.split('/')]
@@ -24,6 +25,12 @@ class Command(BaseCommand):
     def get_channel(self, *args, **options):
         channel_object, _ = Channel.objects.get_or_create(
             name=options['channel'][0]
+        )
+        self.stdout.write(
+            "Channel {} {}".format(
+                channel_object.name,
+                self.style.SUCCESS('imported successfully.')
+            )
         )
         return channel_object
 
@@ -42,9 +49,9 @@ class Command(BaseCommand):
             """
             if channel != channel_object.name:
                 channel_object.delete()
-                raise Exception(
-                    "The channel inside the file\
-                    is different from the argument."
+                raise CommandError(
+                    "The channel inside the file "
+                    "is different from the argument."
                 )
 
             try:
@@ -63,6 +70,7 @@ class Command(BaseCommand):
                 pass
 
     def create_categories(self, *args, **options):
+
         categories = self.get_categories(*args, **options)
         for category in categories:
             name = category['name']
@@ -79,9 +87,15 @@ class Command(BaseCommand):
                 channel=channel,
                 parent_category=category['parent_category']
             )
-            print(category)
+            self.stdout.write(
+                "\t{} {}".format(
+                    category['name'],
+                    self.style.SUCCESS('imported.')
+                )
+            )
 
     def handle(self, *args, **options):
-        print("Trying to import the categories...")
-
         self.create_categories(*args, **options)
+        self.stdout.write(
+            self.style.SUCCESS('The file data was successfully imported.')
+        )
