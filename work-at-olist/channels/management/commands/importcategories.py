@@ -46,7 +46,6 @@ class Command(BaseCommand):
                     channel_object, _ = Channel.objects.get_or_create(
                         name=channel_desc
                     )
-
                 category = {'channel': channel_object}
 
                 if categories[-2] != channel:
@@ -68,10 +67,9 @@ class Command(BaseCommand):
             channel = category['channel']
 
             if category['parent_category']:
-                category['parent_category'], _ = Category.objects.get_or_create(
+                category['parent_category'] = Category.objects.get(
                     name=category['parent_category'],
-                    channel=channel,
-                    parent_category=None
+                    channel=channel
                 )
 
             Category.objects.get_or_create(
