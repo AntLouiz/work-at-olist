@@ -3,3 +3,6 @@ psycopg2
 prettyconf
 dj-database-url
 djangorestframework
+coreapi
+markdown
+pygments
