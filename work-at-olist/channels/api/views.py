@@ -11,12 +11,18 @@ from channels.models import Channel, Category
 
 
 class ChannelList(ListAPIView):
+    """
+    Get all the channels.
+    """
 
     queryset = Channel.objects.all()
     serializer_class = ChannelSerializer
 
 
 class ChannelDetail(RetrieveAPIView):
+    """
+    Get a channel with a given slug.
+    """
 
     lookup_field = 'slug'
     queryset = Channel.objects.all()
@@ -25,7 +31,7 @@ class ChannelDetail(RetrieveAPIView):
 
 class CategoryList(ListAPIView):
     """
-    Get the all the categories.
+    Get all the categories.
     You can filter a category using the channel name and the category name
     has argument. Example: `/api/categories/?channel=XBOX 360&name=Games`
     """
