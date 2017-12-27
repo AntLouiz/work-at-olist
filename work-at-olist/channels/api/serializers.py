@@ -22,6 +22,20 @@ class CategorySerializer(ModelSerializer):
         model = Category
         fields = ('id', 'name', 'categories')
 
+class CategoryListSerializer(ModelSerializer):
+    categories = RecursiveSerializer(many=True, read_only=True)
+    channel = SerializerMethodField(method_name=None)
+    parent_category = SerializerMethodField(method_name=None)
+
+    class Meta:
+        model= Category
+        fields = ('id', 'name', 'channel', 'parent_category', 'categories')
+
+    def get_channel(self, obj):
+        return obj.channel.name
+
+    def get_parent_category(self, obj):
+        return obj.parent_category.name if obj.parent_category else None
 
 class ChannelSerializer(ModelSerializer):
 
