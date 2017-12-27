@@ -6,3 +6,4 @@ djangorestframework
 coreapi
 markdown
 pygments
+python-decouple
