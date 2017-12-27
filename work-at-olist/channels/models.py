@@ -5,7 +5,11 @@ from django.utils.text import slugify
 class Channel(models.Model):
 
     name = models.CharField(max_length=50)
-    slug = models.SlugField(blank=True, null=True)
+    slug = models.SlugField(
+        blank=True,
+        null=True,
+        help_text="The channel slug."
+    )
 
     class Meta:
         verbose_name = "Channel"
