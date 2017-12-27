@@ -1,8 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.exceptions import NotFound
 from .serializers import (
     ChannelSerializer,
     ChannelDetailSerializer,
-    CategorySerializer
+    CategoryListSerializer
 )
 
 from channels.models import Channel, Category
@@ -21,8 +23,28 @@ class ChannelDetail(RetrieveAPIView):
     serializer_class = ChannelDetailSerializer
 
 
-class CategoryDetail(RetrieveAPIView):
+class CategoryList(ListAPIView):
+    """
+    Get the all the categories.
+    You can filter a category using the channel name and the category name
+    has argument. Example: `/api/categories/?channel=XBOX 360&name=Games`
+    """
+    serializer_class = CategoryListSerializer
 
-    lookup_field = 'slug'
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    def get_queryset(self):
+        queryset = Category.objects.all().filter(parent_category__isnull=True)
+        channel = self.request.query_params.get('channel')
+        name = self.request.query_params.get('name')
+
+        if name and channel:
+            try:
+                queryset = Category.objects.get(
+                    name=name,
+                    channel__name=channel
+                )
+
+                return [queryset]
+            except ObjectDoesNotExist:
+                raise NotFound()
+
+        return queryset
