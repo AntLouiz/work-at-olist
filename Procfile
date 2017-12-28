@@ -1,1 +1,1 @@
-web: python work-at-olist/manage.py runserver
+web: python work-at-olist/manage.py runserver 0.0.0.0:$PORT
