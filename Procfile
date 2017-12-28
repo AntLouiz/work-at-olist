@@ -1,0 +1,1 @@
+web: python work-at-olist/manage.py runserver
