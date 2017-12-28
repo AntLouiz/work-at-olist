@@ -7,3 +7,4 @@ coreapi
 markdown
 pygments
 python-decouple
+whitenoise
